@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Tutor Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+
+<div class="bg-white w-full max-w-2xl shadow-xl rounded-xl p-6 space-y-6">
+
+    <h2 class="text-2xl font-bold text-center text-blue-600">
+        Ask Your AI Tutor
+    </h2>
+
+    <!-- FORM START -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- Subject Dropdown -->
+        <div>
+            <label class="block text-sm font-semibold mb-1">Select Subject</label>
+            <select name="subject" class="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300">
+                <option value="">-- Choose subject --</option>
+                <option value="maths">Mathematistics</option>
+                <option value="science">Science</option>
+                <option value="english">English</option>
+                <option value="social">Social Science</option>
+                <option value="tamil">Tamil</option>
+            </select>
+        </div>
+
+        <!-- Question Input -->
+        <div>
+            <label class="block text-sm font-semibold mb-1">Your Question</label>
+            <textarea 
+                name="question"
+                rows="4"
+                class="w-full border rounded-lg p-3 focus:ring focus:ring-blue-300"
+                placeholder="Type your question here..."
+                required
+            ></textarea>
+        </div>
+
+        <!-- PDF Upload -->
+        <div>
+            <label class="block text-sm font-semibold mb-1 flex items-center gap-2">
+                Upload Supporting PDF (Optional)
+                <span class="text-blue-600 text-sm cursor-pointer" title="Upload class notes or book pages for more accurate and detailed answers.">ℹ️</span>
+            </label>
+
+            <input 
+                type="file" 
+                name="pdf_file" 
+                accept="application/pdf"
+                class="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
+            />
+
+            <!-- FILE ERROR MESSAGE -->
+            {% if file_error %}
+            <p class="text-red-600 text-sm mt-1 font-medium">
+                ⚠️ {{ file_error }}
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Submit Button -->
+        <button class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">
+            Ask AI
+        </button>
+    </form>
+    <!-- FORM END -->
+
+    <!-- LLM RESULT SECTION -->
+    {% if answer %}
+    <div class="mt-6 p-4 bg-gray-50 border rounded-lg shadow-inner">
+
+        <h3 class="text-lg font-semibold text-gray-800">AI Tutor Answer:</h3>
+
+        <p class="mt-2 text-gray-700 leading-relaxed">
+            {{ answer | safe }}
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 mt-4">
+
+            <!-- Download Button -->
+            <a href="{% url 'download-pdf' %}" 
+                class="flex-1 bg-green-600 text-white text-center py-2 rounded-lg hover:bg-green-700">
+                Download
+            </a>
+
+            <!-- Re-generate Button -->
+            <form method="POST" action="#" class="flex-1">
+                {% csrf_token %}
+                <input type="hidden" name="subject" value="{{ selected_subject }}">
+                <input type="hidden" name="question" value="{{ asked_question }}">
+
+                <button class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600">
+                    Re-generate
+                </button>
+            </form>
+
+            <!-- Go For Test Button -->
+            <a href="#" 
+                class="flex-1 bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700">
+                Go for Test
+            </a>
+        </div>
+
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
